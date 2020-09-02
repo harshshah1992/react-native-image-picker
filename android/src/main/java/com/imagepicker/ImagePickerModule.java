@@ -253,12 +253,13 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
 
     if (pickVideo)
     {
-      Log.e("test","=pickVideo====");
+
       requestCode = REQUEST_LAUNCH_VIDEO_CAPTURE;
       cameraIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
       cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, videoQuality);
 
-      Log.e("test","=videoDurationLimit====263");
+        //savvient change,  save video at picture directory
+
       final File original = createNewFileVideo(reactContext, this.options, false);
       imageConfig = imageConfig.withOriginalFile(original);
 
@@ -274,8 +275,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         responseHelper.invokeError(callback, "Couldn't get file path for photo");
         return;
       }
-
-
       cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraCaptureURI);
 
       if (videoDurationLimit > 0)
@@ -291,15 +290,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         }
       }
 
-//      try
-//      {
-//        currentActivity.startActivityForResult(cameraIntent, requestCode);
-//      }
-//      catch (ActivityNotFoundException e)
-//      {
-//        e.printStackTrace();
-//        responseHelper.invokeError(callback, "Cannot launch camera");
-//      }
 
     }
     else
@@ -462,7 +452,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         break;
 
       case REQUEST_LAUNCH_VIDEO_LIBRARY:
-        Log.e("test","==REQUEST_LAUNCH_VIDEO_LIBRARY="+uri);
         responseHelper.putString("uri", data.getData().toString());
         responseHelper.putString("path", getRealPathFromURI(data.getData()));
         responseHelper.invokeResponse(callback);
@@ -470,10 +459,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         return;
 
       case REQUEST_LAUNCH_VIDEO_CAPTURE:
+        //savvient change,  save video at picture directory
         Uri  uri_video = Uri.fromFile(imageConfig.getActualFile());
         final String path = getRealPathFromURI(uri_video);
-        Log.e("test","==uri_video="+uri_video);
-        Log.e("test","==path="+path);
         responseHelper.putString("uri", uri_video.toString());
         responseHelper.putString("path", path);
         fileScan(reactContext, path);
@@ -786,3 +774,4 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     }
   }
 }
+

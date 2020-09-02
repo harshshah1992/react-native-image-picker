@@ -66,6 +66,7 @@ public class MediaUtils
 
         return result;
     }
+    //savvient change,  save video at picture directory
     public static @Nullable File createNewFileVideo(@NonNull final Context reactContext,
                                                @NonNull final ReadableMap options,
                                                @NonNull final boolean forceLocal)
@@ -419,3 +420,4 @@ public class MediaUtils
         }
     }
 }
+
