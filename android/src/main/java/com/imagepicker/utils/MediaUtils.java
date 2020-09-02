@@ -45,32 +45,41 @@ public class MediaUtils
                 .append(".jpg")
                 .toString();
 
-        // defaults to Public Pictures Directory
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        final File path = ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions")
+                && ReadableMapUtils.hasAndNotEmptyString(options.getMap("storageOptions"), "path")
+                ? new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), options.getMap("storageOptions").getString("path"))
+                : (!forceLocal ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                              : reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES));
 
-        if (ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions")) 
+        File result = new File(path, filename);
+
+        try
         {
-            final ReadableMap storageOptions = options.getMap("storageOptions");
-
-            if (storageOptions.hasKey("privateDirectory"))
-            {
-                boolean saveToPrivateDirectory = storageOptions.getBoolean("privateDirectory");
-                if (saveToPrivateDirectory)
-                {
-                    // if privateDirectory is set then save to app's private files directory
-                    path = reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                }
-            }
-
-            if (ReadableMapUtils.hasAndNotEmptyString(storageOptions, "path"))
-            {
-                path = new File(path, storageOptions.getString("path"));
-            }
+            path.mkdirs();
+            result.createNewFile();
         }
-        else if (forceLocal)
+        catch (IOException e)
         {
-            path = reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            e.printStackTrace();
+            result = null;
         }
+
+        return result;
+    }
+    public static @Nullable File createNewFileVideo(@NonNull final Context reactContext,
+                                               @NonNull final ReadableMap options,
+                                               @NonNull final boolean forceLocal)
+    {
+        final String filename = new StringBuilder("video-")
+                .append(UUID.randomUUID().toString())
+                .append(".mp4")
+                .toString();
+
+        final File path = ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions")
+                && ReadableMapUtils.hasAndNotEmptyString(options.getMap("storageOptions"), "path")
+                ? new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), options.getMap("storageOptions").getString("path"))
+                : (!forceLocal ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                : reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES));
 
         File result = new File(path, filename);
 
@@ -122,7 +131,7 @@ public class MediaUtils
 
         if (photo == null)
         {
-            return imageConfig;
+            return null;
         }
 
         ImageConfig result = imageConfig;
